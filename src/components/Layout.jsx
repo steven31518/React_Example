@@ -7,10 +7,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 export default function Layout() {
-
-  const { member, dispatch } = useMember();
-
-  const { isError, isPending, isSuccess, data, error } = useQuery({
+  const {
+    isError,
+    isPending,
+    isSuccess,
+    data: emp,
+    error,
+  } = useQuery({
     queryKey: ["GetDeptEmp"],
     queryFn: async () =>
       api.getEmpData({
@@ -18,9 +21,9 @@ export default function Layout() {
         EmpId: "", //工號
         Company: "", //公司
       }),
-    select: (data) => data.filter((emp) => emp.EmpId === "222008"),
   }); //GET
 
+  const nowUser = emp?.filter((item) => item.EmpId === "222008");
   //POST PUT DELETE
 
   if (isPending) return <div>Loading</div>;
@@ -30,9 +33,10 @@ export default function Layout() {
   if (isSuccess)
     return (
       <main className="grid h-screen w-full">
-        <h1>{data[0]?.EmpName}</h1>
-        <h1>{account}</h1>
-        <Outlet />
+        <h1>{nowUser[0]?.EmpName}</h1>
+        <h1>{nowUser[0]?.EmpId}</h1>
+
+        <Outlet context={[emp]} />
       </main>
     );
 }
